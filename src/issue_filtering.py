@@ -29,14 +29,14 @@ def get_interarrivals(perceval_json: dict) -> list:
 
     # Interarrivals computation
     prev = datetime.strptime(data['created_at'], fmt)                # Issue creation datetime
-    last = datetime.strptime(data['closed_at'], fmt)                 # Issue closure/merging datetime
+    closure = datetime.strptime(data['closed_at'], fmt)              # Issue closure/merging datetime
     for elem in data['comments_data']:                               # For each comment of this issue
         curr = datetime.strptime(elem['created_at'], fmt)            # Comment creation datetime
-        if curr > last: break                                        # Ignore comments after the closure of the issue
+        if curr > closure: break                                     # Ignore comments after the closure of the issue
         hours = round((curr-prev).total_seconds()/3600, ndigits=3)   # Interarrival converted in hours
         interarrivals.append(hours)
         prev = curr
-    hours = round((last-prev).total_seconds()/3600, ndigits=3)
+    hours = round((closure-prev).total_seconds()/3600, ndigits=3)    # Last interarrival with the closure datetime
     interarrivals.append(hours)
 
     return interarrivals
@@ -66,7 +66,7 @@ def is_issue_of_interest(issue: dict, min_interarrival: timedelta, max_burst: ti
 
     # Return True if the last interarrival (i.e. diff between closure/merging timestamp and comment) is beyond the
     # threshold. No needs to check for the burst time.
-    if len(data['interarrivals'])-1 == interarrivals_beyond[-1]:
+    if len(data['interarrivals'])-1 in interarrivals_beyond:
         return True
 
     # Get the last comment related to a large interarrival

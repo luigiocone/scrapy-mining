@@ -14,11 +14,6 @@ def get_thresholds(data: []):
     min_interarrival = timedelta(hours=extreme_outlier)
     max_burst = timedelta(hours=q3)
 
-    print(q3)
-    print(np.quantile(data, q=0.5))
-    print(q1)
-    exit(0)
-
     return min_interarrival, max_burst
 
 
